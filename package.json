@@ -1,0 +1,30 @@
+{
+  "name": "recipe-app-graphql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.3.3",
+    "@graphql-tools/schema": "^9.0.16",
+    "apollo-server-express": "^3.11.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "graphql": "^16.6.0",
+    "graphql-middleware": "^6.1.33",
+    "graphql-scalars": "^1.20.1",
+    "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.9.1"
+  }
+}
