@@ -15,7 +15,7 @@ const getUser = async (req) => {
 };
 
 const context = async ({ req, res }) => ({
-  isLogged: true,
+  isLogged: true, // not using
   user: await getUser(req),
 });
 

@@ -55,6 +55,7 @@ const userResolver = {
         if (isUserExists) {
           return {
             __typename: 'EmailAlreadyExistsError',
+            status: 401,
             message: 'Email already Register. Use Different one',
           };
         }
@@ -86,16 +87,6 @@ const userResolver = {
 
     login: async (_, { input: { email, password } }, context) => {
       try {
-        console.log(context);
-        console.log('Context is login');
-        if (!context.user) {
-          throw new GraphQLError('User is not authenticated', {
-            extensions: {
-              code: 'UNAUTHENTICATED',
-              http: { status: 401 },
-            },
-          });
-        }
         const user = await UserModel.findOne({
           $and: [{ email: email }, { password: password }],
         });
