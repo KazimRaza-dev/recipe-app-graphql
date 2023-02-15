@@ -6,17 +6,30 @@ const recipeSchema = gql`
     description: String!
   }
 
+  type NotExistsError {
+    message: String!
+  }
+
+  union SingleRecipeResult = Recipe | NotExistsError
+
   type Query {
-    recipe(id: ID!): Recipe!
+    recipe(id: ID!): SingleRecipeResult!
     getRecipes(amount: Int): [Recipe]
   }
 
+  type RecipeSuccess {
+    isSuccess: Boolean
+    message: String!
+  }
+
+  union RecipeResult = RecipeSuccess | NotExistsError
+
   type Mutation {
     createRecipe(recipeInput: RecipeInput): Recipe!
-    deleteRecipe(id: ID!): Boolean
-    editRecipe(id: ID!, recipeInput: RecipeInput): Boolean
-    incrementThumbsUp(id: ID!): Boolean
-    incrementThumbsDown(id: ID!): Boolean
+    deleteRecipe(id: ID!): RecipeResult
+    editRecipe(id: ID!, recipeInput: RecipeInput): RecipeResult
+    incrementThumbsUp(id: ID!): RecipeResult
+    incrementThumbsDown(id: ID!): RecipeResult
   }
 `;
 

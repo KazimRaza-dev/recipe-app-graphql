@@ -1,14 +1,23 @@
 import UserModel from '../models/user.model.js';
 import userHelper from '../helpers/user.helper.js';
 import jwt from 'jsonwebtoken';
+import { GraphQLError } from 'graphql';
 
 const userResolver = {
   Query: {
     // Destructing {total} is same sa args.total
-    getUsers: async (_, { total }, { user }) => {
+    getUsers: async (_, { total }, contextValue) => {
       try {
-        console.log('login called');
-        console.log(user);
+        console.log('Context is get All user');
+        console.log(contextValue);
+        if (!contextValue.user) {
+          throw new GraphQLError('User is not authenticated', {
+            extensions: {
+              code: 'UNAUTHENTICATED',
+              http: { status: 401 },
+            },
+          });
+        }
         // if (!user) throw new Error('You are not authenticated!');
         const users = await UserModel.find()
           .sort({ createdAt: -1 })
@@ -19,8 +28,17 @@ const userResolver = {
       }
     },
 
-    getUserById: async (_, { id }) => {
+    getUserById: async (_, { id }, contextValue) => {
       try {
+        console.log(contextValue);
+        if (!contextValue.user) {
+          throw new GraphQLError('User is not authenticated', {
+            extensions: {
+              code: 'UNAUTHENTICATED',
+              http: { status: 401 },
+            },
+          });
+        }
         const user = await UserModel.findById(id);
         return user;
       } catch (error) {
@@ -66,8 +84,18 @@ const userResolver = {
       }
     },
 
-    login: async (_, { input: { email, password } }) => {
+    login: async (_, { input: { email, password } }, context) => {
       try {
+        console.log(context);
+        console.log('Context is login');
+        if (!context.user) {
+          throw new GraphQLError('User is not authenticated', {
+            extensions: {
+              code: 'UNAUTHENTICATED',
+              http: { status: 401 },
+            },
+          });
+        }
         const user = await UserModel.findOne({
           $and: [{ email: email }, { password: password }],
         });
