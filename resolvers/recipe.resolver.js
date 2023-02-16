@@ -1,20 +1,9 @@
 import RecipeModel from '../models/recipe.model.js';
-import { GraphQLError } from 'graphql';
 import RecipeHelper from '../helpers/recipe.helper.js';
 
 const recipeResolver = {
   Query: {
     recipe: async (parent, { id }, contextValue) => {
-      console.log('Context is get Single Recipe by Id');
-      console.log(contextValue);
-      if (!contextValue.user) {
-        throw new GraphQLError('User is not authenticated', {
-          extensions: {
-            code: 'UNAUTHENTICATED',
-            http: { status: 401 },
-          },
-        });
-      }
       const recipe = await RecipeModel.findById(id);
       if (!recipe) {
         return {
@@ -29,14 +18,6 @@ const recipeResolver = {
       };
     },
     async getRecipes(parent, args, contextValue) {
-      if (!contextValue.user) {
-        throw new GraphQLError('User is not authenticated', {
-          extensions: {
-            code: 'UNAUTHENTICATED',
-            http: { status: 401 },
-          },
-        });
-      }
       const amount = args.amount;
       const allRecipes = await RecipeModel.find()
         .sort({ createdAt: -1 })
@@ -53,14 +34,6 @@ const recipeResolver = {
       { recipeInput: { name, description } },
       contextValue
     ) => {
-      if (!contextValue.user) {
-        throw new GraphQLError('User is not authenticated', {
-          extensions: {
-            code: 'UNAUTHENTICATED',
-            http: { status: 401 },
-          },
-        });
-      }
       const createdRecipe = new RecipeModel({
         name: name,
         description: description,
@@ -76,14 +49,6 @@ const recipeResolver = {
     },
 
     deleteRecipe: async (_, { id }, contextValue) => {
-      if (!contextValue.user) {
-        throw new GraphQLError('User is not authenticated', {
-          extensions: {
-            code: 'UNAUTHENTICATED',
-            http: { status: 401 },
-          },
-        });
-      }
       const isExists = await RecipeHelper.isRecipeExists(id);
       if (!isExists) {
         return {
@@ -104,14 +69,6 @@ const recipeResolver = {
       { id, recipeInput: { name, description } },
       { user }
     ) => {
-      if (!user) {
-        throw new GraphQLError('User is not authenticated', {
-          extensions: {
-            code: 'UNAUTHENTICATED',
-            http: { status: 401 },
-          },
-        });
-      }
       const isExists = await RecipeHelper.isRecipeExists(id);
       if (!isExists) {
         return {
@@ -133,14 +90,6 @@ const recipeResolver = {
     },
 
     incrementThumbsUp: async (_, { id }, { user }) => {
-      if (!user) {
-        throw new GraphQLError('User is not authenticated', {
-          extensions: {
-            code: 'UNAUTHENTICATED',
-            http: { status: 401 },
-          },
-        });
-      }
       const isExists = await RecipeHelper.isRecipeExists(id);
       if (!isExists) {
         return {
@@ -164,14 +113,6 @@ const recipeResolver = {
     },
 
     incrementThumbsDown: async (_, { id }, { user }) => {
-      if (!user) {
-        throw new GraphQLError('User is not authenticated', {
-          extensions: {
-            code: 'UNAUTHENTICATED',
-            http: { status: 401 },
-          },
-        });
-      }
       const isExists = await RecipeHelper.isRecipeExists(id);
       if (!isExists) {
         return {

@@ -12,6 +12,7 @@ dotenv.config();
 const server = new ApolloServer({
   typeDefs: allTypeDefs,
   resolvers: allResolvers,
+  introspection: true,
 });
 
 const mongoDB = process.env.MONGODB_URL;

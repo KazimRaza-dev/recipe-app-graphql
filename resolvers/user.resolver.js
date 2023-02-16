@@ -8,16 +8,6 @@ const userResolver = {
     // Destructing {total} is same sa args.total
     getUsers: async (_, { total }, contextValue) => {
       try {
-        console.log('Context is get All user');
-        console.log(contextValue);
-        if (!contextValue.user) {
-          throw new GraphQLError('User is not authenticated', {
-            extensions: {
-              code: 'UNAUTHENTICATED',
-              http: { status: 401 },
-            },
-          });
-        }
         // if (!user) throw new Error('You are not authenticated!');
         const users = await UserModel.find()
           .sort({ createdAt: -1 })
@@ -30,15 +20,6 @@ const userResolver = {
 
     getUserById: async (_, { id }, contextValue) => {
       try {
-        console.log(contextValue);
-        if (!contextValue.user) {
-          throw new GraphQLError('User is not authenticated', {
-            extensions: {
-              code: 'UNAUTHENTICATED',
-              http: { status: 401 },
-            },
-          });
-        }
         const user = await UserModel.findById(id);
         return user;
       } catch (error) {
