@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { GraphQLError } from 'graphql';
+import throwCustomError, {
+  ErrorTypes,
+} from '../helpers/error-handler.helper.js';
 
 const getUser = async (token) => {
   try {
@@ -16,9 +18,10 @@ const getUser = async (token) => {
 const context = async ({ req, res }) => {
   //   console.log(req.body.operationName);
   if (req.body.operationName === 'IntrospectionQuery') {
-    console.log('blocking introspection query..');
+    // console.log('blocking introspection query..');
     return {};
   }
+  // allowing the 'CreateUser' and 'Login' queries to pass without giving the token
   if (
     req.body.operationName === 'CreateUser' ||
     req.body.operationName === 'Login'
@@ -32,15 +35,9 @@ const context = async ({ req, res }) => {
   // try to retrieve a user with the token
   const user = await getUser(token);
 
-  if (!user)
-    // throwing a `GraphQLError` here allows us to specify an HTTP status code,
-    // standard `Error`s will have a 500 status code by default
-    throw new GraphQLError('User is not Authenticated', {
-      extensions: {
-        code: 'UNAUTHENTICATED',
-        http: { status: 401 },
-      },
-    });
+  if (!user) {
+    throwCustomError('User is not Authenticated', ErrorTypes.UNAUTHENTICATED);
+  }
 
   // add the user to the context
   return { user };

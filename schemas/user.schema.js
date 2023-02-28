@@ -18,10 +18,6 @@ const userSchema = gql`
     getUserById(id: ID!): User!
   }
 
-  type InvalidCredentialsError {
-    message: String!
-  }
-
   type JwtToken {
     token: String!
   }
@@ -37,17 +33,9 @@ const userSchema = gql`
     userJwtToken: JwtToken
   }
 
-  union LoginResult = UserWithToken | InvalidCredentialsError
-
-  type EmailAlreadyExistsError {
-    message: String!
-  }
-
-  union SignupResult = UserWithToken | EmailAlreadyExistsError
-
   type Mutation {
-    login(input: LoginInput): LoginResult
-    signup(input: SignupInput): SignupResult
+    login(input: LoginInput): UserWithToken
+    signup(input: SignupInput): UserWithToken
   }
 `;
 

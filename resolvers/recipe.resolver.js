@@ -1,23 +1,27 @@
 import RecipeModel from '../models/recipe.model.js';
 import RecipeHelper from '../helpers/recipe.helper.js';
+import throwCustomError, {
+  ErrorTypes,
+} from '../helpers/error-handler.helper.js';
 
 const recipeResolver = {
   Query: {
     recipe: async (parent, { id }, contextValue) => {
       const recipe = await RecipeModel.findById(id);
       if (!recipe) {
-        return {
-          __typename: 'NotExistsError',
-          message: `Recipe with id ${id} does not exists.`,
-        };
+        throwCustomError(
+          `Recipe with id ${id} does not exists.`,
+          ErrorTypes.NOT_FOUND
+        );
       }
       return {
-        __typename: 'Recipe',
-        ...recipe._doc,
         id: recipe._id,
+        ...recipe._doc,
       };
     },
+
     async getRecipes(parent, args, contextValue) {
+      // console.log(contextValue);
       const amount = args.amount;
       const allRecipes = await RecipeModel.find()
         .sort({ createdAt: -1 })
@@ -51,14 +55,13 @@ const recipeResolver = {
     deleteRecipe: async (_, { id }, contextValue) => {
       const isExists = await RecipeHelper.isRecipeExists(id);
       if (!isExists) {
-        return {
-          __typename: 'NotExistsError',
-          message: `Recipe with id ${id} does not exists.`,
-        };
+        throwCustomError(
+          `Recipe with id ${id} does not exists.`,
+          ErrorTypes.NOT_FOUND
+        );
       }
       const isDeleted = (await RecipeModel.deleteOne({ _id: id })).deletedCount;
       return {
-        __typename: 'RecipeSuccess',
         isSuccess: isDeleted, // return true if something is deleted, 0 if nothing is deleted
         message: 'Recipe deleted.',
       };
@@ -71,10 +74,10 @@ const recipeResolver = {
     ) => {
       const isExists = await RecipeHelper.isRecipeExists(id);
       if (!isExists) {
-        return {
-          __typename: 'NotExistsError',
-          message: `Recipe with id ${id} does not exists.`,
-        };
+        throwCustomError(
+          `Recipe with id ${id} does not exists.`,
+          ErrorTypes.NOT_FOUND
+        );
       }
       const isEdited = (
         await RecipeModel.updateOne(
@@ -83,7 +86,6 @@ const recipeResolver = {
         )
       ).modifiedCount;
       return {
-        __typename: 'RecipeSuccess',
         isSuccess: isEdited, // return 1 if something is edited, 0 if nothing is edited
         message: 'Recipe Edited.',
       };
@@ -92,10 +94,10 @@ const recipeResolver = {
     incrementThumbsUp: async (_, { id }, { user }) => {
       const isExists = await RecipeHelper.isRecipeExists(id);
       if (!isExists) {
-        return {
-          __typename: 'NotExistsError',
-          message: `Recipe with id ${id} does not exists.`,
-        };
+        throwCustomError(
+          `Recipe with id ${id} does not exists.`,
+          ErrorTypes.NOT_FOUND
+        );
       }
       await RecipeModel.findByIdAndUpdate(
         { _id: id },
@@ -106,7 +108,6 @@ const recipeResolver = {
       );
 
       return {
-        __typename: 'RecipeSuccess',
         isSuccess: true,
         message: 'Thumbs up incremented..',
       };
@@ -115,10 +116,10 @@ const recipeResolver = {
     incrementThumbsDown: async (_, { id }, { user }) => {
       const isExists = await RecipeHelper.isRecipeExists(id);
       if (!isExists) {
-        return {
-          __typename: 'NotExistsError',
-          message: `Recipe with id ${id} does not exists.`,
-        };
+        throwCustomError(
+          `Recipe with id ${id} does not exists.`,
+          ErrorTypes.NOT_FOUND
+        );
       }
       await RecipeModel.findByIdAndUpdate(
         { _id: id },
@@ -128,7 +129,6 @@ const recipeResolver = {
         { new: true }
       );
       return {
-        __typename: 'RecipeSuccess',
         isSuccess: true,
         message: 'Thumbs Down incremented..',
       };

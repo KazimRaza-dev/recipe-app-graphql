@@ -12,6 +12,7 @@ dotenv.config();
 const server = new ApolloServer({
   typeDefs: allTypeDefs,
   resolvers: allResolvers,
+  includeStacktraceInErrorResponses: false, //to exclude stackTrace parameter from error messages
   introspection: true,
 });
 
